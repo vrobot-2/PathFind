@@ -1,0 +1,419 @@
+{
+  "park": {
+    "name": "Marsh Creek State Park",
+    "region": "Chester County, PA",
+    "center": { "lat": 40.0745, "lng": -75.7779 },
+    "acreage": 1730,
+    "lakeAcres": 535
+  },
+  "lake": {
+    "polygon": [
+      [40.0957, -75.7974],
+      [40.095, -75.8014],
+      [40.0905, -75.7918],
+      [40.0873, -75.7914],
+      [40.0836, -75.7946],
+      [40.0778, -75.7923],
+      [40.074, -75.7962],
+      [40.068, -75.7861],
+      [40.0613, -75.7818],
+      [40.0586, -75.7721],
+      [40.0549, -75.7775],
+      [40.0534, -75.76],
+      [40.056, -75.7577],
+      [40.0581, -75.7595],
+      [40.0607, -75.755],
+      [40.0585, -75.7647],
+      [40.06, -75.766],
+      [40.0678, -75.7582],
+      [40.0671, -75.7636],
+      [40.061, -75.768],
+      [40.0679, -75.7724],
+      [40.0723, -75.7725],
+      [40.0793, -75.7658],
+      [40.0808, -75.7679],
+      [40.0766, -75.7735],
+      [40.0793, -75.7769],
+      [40.076, -75.778],
+      [40.0723, -75.7846],
+      [40.0728, -75.7914],
+      [40.0898, -75.7881]
+    ]
+  },
+  "trails": [
+    {
+      "name": "White Trail",
+      "distanceMi": 4.0,
+      "surface": "packed-dirt",
+      "difficulty": "easy",
+      "maxSlopePct": 5,
+      "widthIn": 72,
+      "wheelchairOk": false,
+      "bikeOk": true,
+      "walkerOk": true,
+      "loop": false,
+      "description": "Official 4.0-mile out-and-back and the easiest hiking route on the west side. From the West Launch it follows the lakeshore, rolls through the agricultural fields and horse-barn area, and reaches the dam. Wide, largely gentle tread with a few short climbs.",
+      "geometry": [
+        [40.0626, -75.7828],
+        [40.0655, -75.7868],
+        [40.0685, -75.788],
+        [40.07, -75.7895],
+        [40.069, -75.792],
+        [40.065, -75.7925],
+        [40.061, -75.791],
+        [40.058, -75.7875],
+        [40.056, -75.7825],
+        [40.055, -75.778]
+      ]
+    },
+    {
+      "name": "Blue Trail",
+      "distanceMi": 3.5,
+      "surface": "packed-dirt",
+      "difficulty": "moderate",
+      "maxSlopePct": 10,
+      "widthIn": 96,
+      "wheelchairOk": false,
+      "bikeOk": true,
+      "walkerOk": true,
+      "loop": true,
+      "description": "Official 3.5-mile loop with blue blazes, rated more difficult. Mostly wooded and wide enough for horses, it passes historic ruins and follows the East Branch of the Brandywine Creek on the park's west edge.",
+      "geometry": [
+        [40.0626, -75.7828],
+        [40.0645, -75.7885],
+        [40.0675, -75.794],
+        [40.072, -75.7985],
+        [40.077, -75.801],
+        [40.082, -75.7995],
+        [40.0855, -75.7955],
+        [40.0845, -75.795],
+        [40.08, -75.795],
+        [40.074, -75.797],
+        [40.068, -75.789],
+        [40.0626, -75.7828]
+      ]
+    },
+    {
+      "name": "Green Trail",
+      "distanceMi": 1.0,
+      "surface": "packed-dirt",
+      "difficulty": "moderate",
+      "maxSlopePct": 9,
+      "widthIn": 60,
+      "wheelchairOk": false,
+      "bikeOk": true,
+      "walkerOk": true,
+      "loop": false,
+      "description": "Official 1.0-mile connector with green blazes, rated more difficult. It links the West Launch area to the Blue Trail so riders and hikers can build a longer wooded loop.",
+      "geometry": [
+        [40.0626, -75.7828],
+        [40.064, -75.7855],
+        [40.0665, -75.7875],
+        [40.069, -75.79],
+        [40.0705, -75.793],
+        [40.0715, -75.795]
+      ]
+    },
+    {
+      "name": "Lime Loop",
+      "distanceMi": 1.8,
+      "surface": "packed-dirt",
+      "difficulty": "moderate",
+      "maxSlopePct": 11,
+      "widthIn": 48,
+      "wheelchairOk": false,
+      "bikeOk": true,
+      "walkerOk": true,
+      "loop": true,
+      "description": "Official 1.8-mile loop with lime blazes, rated more difficult. The loop branches off the Blue Trail in the northwestern part of the park and is a local favorite for mountain biking and horseback riding.",
+      "geometry": [
+        [40.077, -75.797],
+        [40.0785, -75.8008],
+        [40.0812, -75.8038],
+        [40.0842, -75.8028],
+        [40.0852, -75.7985],
+        [40.084, -75.7945],
+        [40.08, -75.7938],
+        [40.077, -75.797]
+      ]
+    },
+    {
+      "name": "Mansion Trails",
+      "distanceMi": 0.9,
+      "surface": "packed-dirt",
+      "difficulty": "easy",
+      "maxSlopePct": 4,
+      "widthIn": 48,
+      "wheelchairOk": false,
+      "bikeOk": true,
+      "walkerOk": true,
+      "loop": false,
+      "description": "Official 0.9-mile connector with white/blue blazes, rated easiest. Stone foundations and other remnants of the village of Milford Mills, flooded when the reservoir filled, sit beside the path.",
+      "geometry": [
+        [40.06, -75.784],
+        [40.0608, -75.787],
+        [40.0625, -75.788],
+        [40.064, -75.786],
+        [40.0635, -75.7835],
+        [40.0618, -75.7825],
+        [40.06, -75.784]
+      ]
+    },
+    {
+      "name": "Park Road Trail",
+      "distanceMi": 0.6,
+      "surface": "paved",
+      "difficulty": "easy",
+      "maxSlopePct": 2,
+      "widthIn": 72,
+      "wheelchairOk": true,
+      "bikeOk": true,
+      "walkerOk": true,
+      "loop": false,
+      "description": "Official 0.6-mile out-and-back, rated easiest and the park's ADA route. The paved path runs from the boat-rental parking area past the warm-season grass fields to the accessible fishing pier at the East Launch.",
+      "geometry": [
+        [40.0682, -75.7708],
+        [40.0686, -75.769],
+        [40.0685, -75.7678],
+        [40.0682, -75.7668],
+        [40.0674, -75.7645]
+      ]
+    },
+    {
+      "name": "Red Trail",
+      "distanceMi": 1.5,
+      "surface": "packed-dirt",
+      "difficulty": "moderate",
+      "maxSlopePct": 9,
+      "widthIn": 42,
+      "wheelchairOk": false,
+      "bikeOk": false,
+      "walkerOk": true,
+      "loop": true,
+      "description": "Official 1.5-mile loop with red blazes, rated more difficult and open to hiking only. It is the east-side trail, running along the lake and through woods between the day-use areas and the East Launch.",
+      "geometry": [
+        [40.0675, -75.7695],
+        [40.0688, -75.766],
+        [40.0688, -75.7625],
+        [40.067, -75.758],
+        [40.0645, -75.759],
+        [40.062, -75.761],
+        [40.0612, -75.764],
+        [40.063, -75.7668],
+        [40.0652, -75.7688],
+        [40.0675, -75.7695]
+      ]
+    },
+    {
+      "name": "Yellow Trail",
+      "distanceMi": 6.2,
+      "surface": "rocky",
+      "difficulty": "hard",
+      "maxSlopePct": 16,
+      "widthIn": 36,
+      "wheelchairOk": false,
+      "bikeOk": true,
+      "walkerOk": true,
+      "loop": false,
+      "description": "Official 6.2-mile out-and-back with yellow blazes, rated most difficult. It starts at the Dorlan Mill Road parking area and threads the mountain-bike loops south and east of the dam, with steep pitches, roots and rock.",
+      "geometry": [
+        [40.052, -75.762],
+        [40.0512, -75.7575],
+        [40.0495, -75.753],
+        [40.0478, -75.748],
+        [40.0465, -75.743],
+        [40.0472, -75.739],
+        [40.0498, -75.7375],
+        [40.052, -75.741],
+        [40.0538, -75.746],
+        [40.0528, -75.7555],
+        [40.0512, -75.759],
+        [40.052, -75.762]
+      ]
+    }
+  ],
+  "pois": [
+    {
+      "name": "West Launch Lake Vista",
+      "category": "scenic",
+      "lat": 40.0628,
+      "lng": -75.7835,
+      "description": "Open view across the main basin from the west boat launch, with the north arm stretching away to the left and the dam far to the southeast.",
+      "alertText": "Look left — the lake opens up beyond the launch"
+    },
+    {
+      "name": "Marsh Creek Dam Overlook",
+      "category": "scenic",
+      "lat": 40.0553,
+      "lng": -75.7605,
+      "description": "The 90-foot-high, 990-foot-long earth-and-rock fill dam closes the south end of the lake. The dam was built between 1970 and 1973.",
+      "alertText": "Ahead — the 990-foot dam holding back 535 acres of water"
+    },
+    {
+      "name": "North Arm Overlook",
+      "category": "scenic",
+      "lat": 40.089,
+      "lng": -75.7898,
+      "description": "The reservoir narrows into a winding north arm here, with drowned timber and quiet backwater habitat toward Little Conestoga Road.",
+      "alertText": "Look left — the north arm winds away toward the woods"
+    },
+    {
+      "name": "East Launch Marina View",
+      "category": "scenic",
+      "lat": 40.068,
+      "lng": -75.77,
+      "description": "Sailboats, rental craft and seasonal mooring slips fill the east basin beside the boat rental and snack bar.",
+      "alertText": "Marina ahead — watch for sailboats crossing the basin"
+    },
+    {
+      "name": "Milford Mills Ruins",
+      "category": "historic",
+      "lat": 40.0605,
+      "lng": -75.785,
+      "description": "Stone foundations and cellar holes mark the village of Milford Mills, the only settlement inside the area flooded for the reservoir.",
+      "alertText": "Historic stone foundations on your left — Milford Mills"
+    },
+    {
+      "name": "Murphy Mansion Site",
+      "category": "historic",
+      "lat": 40.0615,
+      "lng": -75.786,
+      "description": "Mike Murphy's 168-acre racehorse estate, including a 44-room mansion, once formed almost the whole village. The buildings were demolished during park development.",
+      "alertText": "Murphy Mansion site — a 44-room house stood here"
+    },
+    {
+      "name": "Larkin Covered Bridge Site",
+      "category": "historic",
+      "lat": 40.0575,
+      "lng": -75.779,
+      "description": "An 1854 covered bridge once spanned Marsh Creek at Milford Mills. It was moved to an Upper Uwchlan Township trail before the valley was flooded.",
+      "alertText": "The 1854 Larkin covered bridge once crossed here"
+    },
+    {
+      "name": "Dam Construction Interpretive Site",
+      "category": "historic",
+      "lat": 40.0548,
+      "lng": -75.7615,
+      "description": "Construction ran from May 1970 to June 1973. The gates closed on November 16, 1973, and the lake reached normal pool on June 21, 1974.",
+      "alertText": "1970s dam works — the gates closed in November 1973"
+    },
+    {
+      "name": "Heron Rookery",
+      "category": "wildlife",
+      "lat": 40.087,
+      "lng": -75.786,
+      "description": "Drowned snags in the quiet north arm give herons and other wading birds a sheltered nesting and feeding area in spring.",
+      "alertText": "Heron rookery on the north arm — quiet please"
+    },
+    {
+      "name": "Osprey Platform",
+      "category": "wildlife",
+      "lat": 40.0728,
+      "lng": -75.77,
+      "description": "Ospreys are regular spring and fall migrants over the lake and rebuild stick nests on platform poles near the east shore.",
+      "alertText": "Osprey platform ahead — look up and scan the sky"
+    },
+    {
+      "name": "Bald Eagle Perch",
+      "category": "wildlife",
+      "lat": 40.0805,
+      "lng": -75.78,
+      "description": "Bald eagles patrol the open water here, especially in winter when migrating waterfowl concentrate on the lake.",
+      "alertText": "Bald eagle often perches in the tall oak on the point"
+    },
+    {
+      "name": "Turtle Basking Platforms",
+      "category": "wildlife",
+      "lat": 40.067,
+      "lng": -75.759,
+      "description": "The lake's artificial fish-habitat program includes turtle basking platforms; painted and snapping turtles haul out on warm afternoons.",
+      "alertText": "Count the turtles on the basking platforms"
+    },
+    {
+      "name": "Grassland Bird Meadow",
+      "category": "wildlife",
+      "lat": 40.0688,
+      "lng": -75.788,
+      "description": "Warm-season grasses of Indian grass, big and little bluestem and switchgrass shelter bobolinks, meadowlarks, savannah sparrows and northern harriers.",
+      "alertText": "Listen — bobolinks and meadowlarks nest in this grass"
+    },
+    {
+      "name": "Wood Duck Cove",
+      "category": "wildlife",
+      "lat": 40.06,
+      "lng": -75.7705,
+      "description": "A sheltered cove off the east basin where wood ducks, mallards and spring migrants loaf in the flooded brush.",
+      "alertText": "Quiet cove on the right — wood ducks frequent the brush"
+    },
+    {
+      "name": "Dam Spillway",
+      "category": "water",
+      "lat": 40.055,
+      "lng": -75.7575,
+      "description": "The concrete spillway carries releases around the earth-fill dam into Marsh Creek and the East Branch Brandywine downstream.",
+      "alertText": "Look left — the 1971 dam spillway"
+    },
+    {
+      "name": "East Branch Brandywine",
+      "category": "water",
+      "lat": 40.078,
+      "lng": -75.802,
+      "description": "The East Branch of the Brandywine Creek threads the western woods and feeds the reservoir; the Blue Trail follows its bank.",
+      "alertText": "Creek crossing ahead — the East Branch of the Brandywine"
+    },
+    {
+      "name": "ADA Fishing Pier",
+      "category": "water",
+      "lat": 40.0674,
+      "lng": -75.7645,
+      "description": "The accessible fishing pier at the East Launch has ADA parking nearby and is the destination of the paved Park Road Trail.",
+      "alertText": "Accessible fishing pier ahead — level paved approach"
+    },
+    {
+      "name": "Sunset Point",
+      "category": "photo",
+      "lat": 40.061,
+      "lng": -75.7845,
+      "description": "A west-shore opening with an unobstructed sightline down the lake toward the dam — the park's classic evening photograph.",
+      "alertText": "Sunset Point — arrive 30 minutes before dusk"
+    },
+    {
+      "name": "Butterfly Meadow",
+      "category": "photo",
+      "lat": 40.065,
+      "lng": -75.79,
+      "description": "A planted meadow of native warm-season flowers beside the west fields, best for macro photography from July through September.",
+      "alertText": "Photo stop — butterfly meadow in bloom on your right"
+    }
+  ],
+  "facilities": [
+    { "name": "Park Office", "type": "park-office", "lat": 40.07, "lng": -75.7665 },
+    { "name": "East Launch", "type": "boat-launch", "lat": 40.0678, "lng": -75.7705 },
+    { "name": "West Launch", "type": "boat-launch", "lat": 40.0626, "lng": -75.7835 },
+    { "name": "Boat Rental", "type": "boat-rental", "lat": 40.0681, "lng": -75.7698 },
+    { "name": "Swimming Pool", "type": "swimming-pool", "lat": 40.0712, "lng": -75.7658 },
+    { "name": "Sprayground", "type": "sprayground", "lat": 40.071, "lng": -75.765 },
+    { "name": "Picnic Area East", "type": "picnic-area", "lat": 40.0695, "lng": -75.7672 },
+    { "name": "Picnic Area West", "type": "picnic-area", "lat": 40.0618, "lng": -75.7845 },
+    { "name": "Playground", "type": "playground", "lat": 40.0707, "lng": -75.7665 },
+    { "name": "Modern Restrooms East", "type": "restroom", "lat": 40.0697, "lng": -75.7678 },
+    { "name": "Shower House", "type": "restroom", "lat": 40.0714, "lng": -75.7662 },
+    { "name": "Snack Bar", "type": "concession", "lat": 40.0683, "lng": -75.7695 },
+    { "name": "Boat Mooring", "type": "mooring", "lat": 40.0692, "lng": -75.7715 },
+    { "name": "Stable / Equestrian Concession", "type": "equestrian", "lat": 40.07, "lng": -75.79 },
+    { "name": "Dam", "type": "dam", "lat": 40.055, "lng": -75.7585 },
+    { "name": "ADA Fishing Pier", "type": "fishing-pier", "lat": 40.0674, "lng": -75.7645 },
+    { "name": "Dorlan Mill Trailhead Parking", "type": "parking", "lat": 40.052, "lng": -75.762 },
+    { "name": "Little Conestoga Trailhead Parking", "type": "parking", "lat": 40.09, "lng": -75.798 },
+    { "name": "Horse Trailer Parking", "type": "parking", "lat": 40.0695, "lng": -75.7925 },
+    { "name": "Butterfly Meadow", "type": "nature-feature", "lat": 40.065, "lng": -75.79 }
+  ],
+  "sources": [
+    "MACR_ParkGuide.pdf (PA DCNR recreational guide, 2021) pages 1-2",
+    "MACR_ParkMap.pdf (PA DCNR park map, rev. 1/14/21) page 1",
+    "https://www.pa.gov/agencies/dcnr/recreation/where-to-go/state-parks/find-a-park/marsh-creek-state-park/hiking",
+    "https://www.pa.gov/agencies/dcnr/recreation/where-to-go/state-parks/find-a-park/marsh-creek-state-park/accessibility",
+    "https://www.pa.gov/agencies/dcnr/recreation/where-to-go/state-parks/find-a-park/marsh-creek-state-park",
+    "https://elibrary.dcnr.pa.gov/GetDocument?docId=1737493&DocName=MACR_ParkMap.pdf"
+  ]
+}

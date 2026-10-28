@@ -1,0 +1,8 @@
+node_modules
+dist
+server/pathfind.db
+server/pathfind.db-wal
+server/pathfind.db-shm
+.env
+.DS_Store
+*.local
