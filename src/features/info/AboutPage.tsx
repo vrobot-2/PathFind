@@ -1,10 +1,12 @@
-import { motion } from "framer-motion";
+import { useState, type ReactNode } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
   Accessibility,
   ArrowRight,
   BellRing,
   Bike,
+  ChevronDown,
   Compass,
   Database,
   Footprints,
@@ -84,6 +86,119 @@ const stack = [
   ["Charts", "Recharts"],
 ];
 
+const faqs: { question: string; answer: ReactNode }[] = [
+  {
+    question: "Does it work without a signal?",
+    answer: (
+      <>
+        Yes. The whole app runs client-side — the trail network, reports, reviews and metrics are
+        stored in your browser (localStorage) from a bundled snapshot, so there is no server
+        round-trip once the app has loaded. Base map tiles still need a connection.
+      </>
+    ),
+  },
+  {
+    question: "How are the accessibility scores calculated?",
+    answer: (
+      <>
+        Every route starts at 100: grade above 5% (wheelchair), 15% (walker) or 12% (bike) costs 12
+        points per percent, rough surfaces cost wheelchair routes 15, corridors under 36 in cost 25,
+        and closed trails score 0.
+      </>
+    ),
+  },
+  {
+    question: "Who can report a hazard?",
+    answer: (
+      <>
+        Any visitor, no account required. Reports appear on the live map right away and enter the
+        ranger queue for triage — open → assigned → resolved.
+      </>
+    ),
+  },
+  {
+    question: "Is the trail data official?",
+    answer: (
+      <>
+        It is built from DCNR park guides and maps for Marsh Creek. Coordinates for the pilot were
+        remapped into a demo frame, so treat it as a pilot rather than survey-grade data.
+      </>
+    ),
+  },
+  {
+    question: "Do I need to install an app?",
+    answer: (
+      <>
+        No. PAthFind is a web app — scan the QR code on the homepage and it runs right in your
+        browser.
+      </>
+    ),
+  },
+  {
+    question: "Which parks are covered?",
+    answer: (
+      <>
+        Marsh Creek State Park is the pilot. The data model is built for Pennsylvania&apos;s{" "}
+        {STATE_PARKS} state parks, so the same codebase can roll out statewide.
+      </>
+    ),
+  },
+];
+
+function FaqList() {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const reduceMotion = useReducedMotion();
+
+  return (
+    <div className="mt-5 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xl shadow-slate-200/50">
+      {faqs.map((item, index) => {
+        const isOpen = openIndex === index;
+        return (
+          <div key={item.question} className={index > 0 ? "border-t border-slate-100" : undefined}>
+            <button
+              type="button"
+              aria-expanded={isOpen}
+              onClick={() => setOpenIndex(isOpen ? null : index)}
+              className="flex min-h-[44px] w-full items-center justify-between gap-4 px-4 py-3.5 text-left transition-colors hover:bg-slate-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500/40"
+            >
+              <span className="text-sm font-semibold tracking-tight text-slate-900">
+                {item.question}
+              </span>
+              <ChevronDown
+                size={16}
+                aria-hidden="true"
+                className={`shrink-0 text-slate-400 transition-transform duration-200 ${
+                  isOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  key="answer"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={
+                    reduceMotion
+                      ? { duration: 0 }
+                      : { duration: 0.22, ease: [0.16, 1, 0.3, 1] }
+                  }
+                  className="overflow-hidden"
+                >
+                  <p className="px-4 pb-4 text-sm leading-relaxed text-slate-600">
+                    {item.answer}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function AboutPage() {
   return (
     <motion.main
@@ -133,6 +248,11 @@ export default function AboutPage() {
             </motion.div>
           ))}
         </motion.div>
+      </section>
+
+      <section id="faq" className="mt-14">
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500">FAQ</h2>
+        <FaqList />
       </section>
 
       <section className="mt-14">
@@ -207,8 +327,10 @@ export default function AboutPage() {
           </ul>
         </Card>
 
-        <Card className="bg-emerald-900 text-white">
-          <h2 className="text-lg font-bold tracking-tight">Built to scale to {STATE_PARKS} parks</h2>
+        <div className="rounded-2xl border border-emerald-900/40 bg-emerald-900 bg-gradient-to-br from-emerald-900 to-emerald-800 p-5 text-white shadow-xl shadow-emerald-900/20">
+          <h2 className="text-lg font-bold tracking-tight text-white">
+            Built to scale to {STATE_PARKS} parks
+          </h2>
           <p className="mt-2 text-sm leading-relaxed text-emerald-50/90">
             Everything runs on standard GPS/GIS trail datasets and a single-file SQLite store — the
             Marsh Creek pilot ships {TRAIL_COUNT} trails, {TRAIL_MI_TOTAL} miles of tread and a{" "}
@@ -255,7 +377,7 @@ export default function AboutPage() {
               <span>Reservations · statewide rollout</span>
             </div>
           </div>
-        </Card>
+        </div>
       </section>
 
       <section className="mt-14">

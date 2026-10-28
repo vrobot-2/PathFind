@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { Accessibility, Play, Square, X } from "lucide-react";
+import { Accessibility, ArrowRight, Play, RotateCcw, Square, X } from "lucide-react";
 import { useAppStore } from "../../store/useAppStore";
+import { Button } from "../../components/ui/Button";
+import { useDemoChrome } from "../../lib/demoChrome";
 import { panelSpring } from "../../motion/presets";
 import { cn } from "../../lib/utils";
 
@@ -15,9 +17,27 @@ interface Step {
 
 const TOTAL_LABEL = "Judge demo";
 
+function scrollToTop() {
+  try {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch {
+    /* ignore */
+  }
+}
+
+function scrollToRatio(ratio: number) {
+  try {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    window.scrollTo({ top: Math.max(0, Math.round(max * ratio)), behavior: "smooth" });
+  } catch {
+    /* ignore */
+  }
+}
+
 /**
  * Auto-playing walkthrough of the whole product.
- * Mobile-first: a compact control bar that never covers the app's own primary UI.
+ * Kiosk mode (`?demo=1`) locks interaction, scrolls itself, and ends with a
+ * "watch again / explore" choice instead of looping forever.
  */
 export default function DemoMode() {
   const navigate = useNavigate();
@@ -25,45 +45,80 @@ export default function DemoMode() {
   const [running, setRunning] = useState(false);
   const [index, setIndex] = useState(-1);
   const [steps, setSteps] = useState<Step[]>([]);
+  const [done, setDone] = useState(false);
   const [kiosk, setKiosk] = useState(false);
+
   const kioskRef = useRef(false);
   const startRef = useRef<(() => void) | null>(null);
   const timer = useRef<number | null>(null);
-  const restartTimer = useRef<number | null>(null);
+  const token = useRef(0);
+  const autoStarted = useRef(false);
+
+  const clearTimer = useCallback(() => {
+    if (timer.current) window.clearTimeout(timer.current);
+    timer.current = null;
+  }, []);
 
   const buildSteps = useCallback((): Step[] => {
-    const store = useAppStore.getState();
     return [
       {
         label: "Explore the park",
-        hint: "Marsh Creek State Park · 8 trails mapped",
-        ms: 3000,
-        run: () => { /* experiment: no navigate */ },
+        hint: "Marsh Creek State Park · 1,784 acres · 8 trails mapped",
+        ms: 3600,
+        run: () => {
+          navigate("/");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        },
+      },
+      {
+        label: "How accessible is the park?",
+        hint: "2 of 8 trails are step-free · 2.2 miles",
+        ms: 3400,
+        run: () => scrollToRatio(0.34),
+      },
+      {
+        label: "Scan and take it with you",
+        hint: "The whole app runs in the browser — no download",
+        ms: 3400,
+        run: () => {
+          const qr = document.querySelector('img[src="/qr-pathfind.svg"]');
+          if (qr) {
+            qr.scrollIntoView({ behavior: "smooth", block: "center" });
+          } else {
+            scrollToRatio(1);
+          }
+        },
       },
       {
         label: "Choose a mobility profile",
-        hint: "Wheelchair → step-free routes only",
+        hint: "Wheelchair → step-free trails only",
         ms: 2600,
-        run: () => { store.setProfile("walker"); },
+        run: () => {
+          scrollToTop();
+          useAppStore.getState().setProfile("wheelchair");
+        },
       },
       {
         label: "Open the live map",
         hint: "Compatible trails glow, the rest dim",
-        ms: 2800,
-        run: () => navigate("/map"),
+        ms: 3200,
+        run: () => {
+          navigate("/map");
+          window.scrollTo({ top: 0 });
+          useDemoChrome.getState().setCleanMap(true);
+        },
       },
       {
         label: "Start the step-free loop",
         hint: "Lakeside Accessible Loop · 1.6 mi · 2% grade",
-        ms: 15000,
+        ms: 14000,
         run: () => {
-          const trails = useAppStore.getState().trails;
-          const trail =
-            trails.find((t) => t.id === "lakeside-accessible-loop") ??
-            trails.find((t) => t.wheelchairOk) ??
-            trails[0];
-          if (!trail) return;
           const s = useAppStore.getState();
+          const trail =
+            s.trails.find((t) => t.id === "lakeside-accessible-loop") ??
+            s.trails.find((t) => t.wheelchairOk) ??
+            s.trails[0];
+          if (!trail) return;
           s.selectTrail(trail.id);
           s.startRoute(trail);
         },
@@ -71,77 +126,131 @@ export default function DemoMode() {
       {
         label: "Drop a hazard report",
         hint: "Visitors flag issues with a photo",
-        ms: 3600,
+        ms: 4200,
         run: () => {
           const s = useAppStore.getState();
           s.setPinMode("report");
-          s.setPendingPin({ lat: 40.0724, lng: -75.7812 });
+          // let the sheet settle, then drop the pin so the form renders
+          window.setTimeout(() => {
+            useAppStore.getState().setPendingPin({ lat: 40.0724, lng: -75.7812 });
+          }, 350);
         },
       },
       {
         label: "Rangers see it instantly",
-        hint: "Traffic heatmap, response times, live feed",
-        ms: 5200,
+        hint: "Traffic, response times and a live hazard feed",
+        ms: 5000,
         run: () => {
           const s = useAppStore.getState();
           s.setPinMode("none");
           s.clearRoute();
+          useDemoChrome.getState().setCleanMap(false);
           navigate("/admin");
+          window.scrollTo({ top: 0 });
         },
       },
       {
         label: "Triage and resolve",
         hint: "Report queue → ranger note → resolved",
         ms: 5200,
-        run: () => navigate("/admin/reports"),
+        run: () => {
+          navigate("/admin/reports");
+          window.scrollTo({ top: 0 });
+        },
       },
     ];
   }, [navigate]);
 
-  const stop = useCallback(() => {
-    if (timer.current) window.clearTimeout(timer.current);
-    timer.current = null;
+  const finish = useCallback(() => {
+    clearTimer();
     setRunning(false);
     setIndex(-1);
+    setDone(true);
+    useDemoChrome.getState().setCleanMap(false);
+    const s = useAppStore.getState();
+    s.setPinMode("none");
+    useAppStore.setState({ pendingPin: null });
+  }, [clearTimer]);
+
+  const runStep = useCallback(
+    (list: Step[], i: number, myToken: number) => {
+      if (token.current !== myToken) return;
+      if (i >= list.length) {
+        finish();
+        return;
+      }
+      setIndex(i);
+      setSteps(list);
+      try {
+        list[i].run();
+      } catch {
+        /* a step failing must never stall the tour */
+      }
+      timer.current = window.setTimeout(() => runStep(list, i + 1, myToken), list[i].ms);
+    },
+    [finish],
+  );
+
+  const start = useCallback(() => {
+    clearTimer();
+    const myToken = ++token.current;
+    const list = buildSteps();
+    setSteps(list);
+    setIndex(0);
+    setRunning(true);
+    setDone(false);
+    useDemoChrome.getState().setCleanMap(false);
+    window.scrollTo({ top: 0 });
+
+    void (async () => {
+      const s = useAppStore.getState();
+      if (s.trails.length === 0) await s.loadTrails();
+      if (s.reports.length === 0) await s.loadReports();
+      if (token.current === myToken) runStep(list, 0, myToken);
+    })();
+  }, [buildSteps, clearTimer, runStep]);
+
+  startRef.current = start;
+
+  const stop = useCallback(() => {
+    clearTimer();
+    token.current += 1;
+    setRunning(false);
+    setIndex(-1);
+    setDone(false);
+    useDemoChrome.getState().setCleanMap(false);
     const s = useAppStore.getState();
     s.setPinMode("none");
     s.clearRoute();
     navigate("/");
-  }, [navigate]);
+  }, [clearTimer, navigate]);
 
-  const advance = useCallback(
-    (list: Step[], next: number) => {
-      if (next >= list.length) {
-        setRunning(false);
-        setIndex(-1);
-        // kiosk mode loops forever for the QR-code demo
-        if (kioskRef.current) {
-          restartTimer.current = window.setTimeout(() => startRef.current?.(), 4200);
-        }
-        return;
-      }
-      setIndex(next);
-      list[next].run();
-      timer.current = window.setTimeout(() => advance(list, next + 1), list[next].ms);
-    },
-    [],
-  );
-
-  const start = useCallback(async () => {
-    if (restartTimer.current) window.clearTimeout(restartTimer.current);
-    restartTimer.current = null;
-    const list = buildSteps();
-    setSteps(list);
-    setRunning(true);
+  /* Leave kiosk mode and hand the app back to the visitor. */
+  const explore = useCallback(() => {
+    clearTimer();
+    token.current += 1;
+    kioskRef.current = false;
+    setKiosk(false);
+    setRunning(false);
+    setIndex(-1);
+    setDone(false);
+    useDemoChrome.getState().setCleanMap(false);
     const s = useAppStore.getState();
-    if (s.trails.length === 0) await s.loadTrails();
-    if (s.reports.length === 0) await s.loadReports();
-    advance(list, 0);
-  }, [advance, buildSteps]);
+    s.setPinMode("none");
+    s.clearRoute();
+    if (window.location.pathname === "/demo") {
+      navigate("/", { replace: true });
+    }
+    try {
+      window.history.replaceState(null, "", "/");
+    } catch {
+      /* ignore */
+    }
+    navigate("/", { replace: true });
+    window.scrollTo({ top: 0 });
+  }, [clearTimer, navigate]);
 
-  startRef.current = start;
-
-  // Kiosk detection: /demo or ?demo=1 turns the app into a non-interactive loop.
+  /* Kiosk detection: /demo or ?demo=1. */
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const isKiosk = params.get("demo") === "1" || window.location.pathname === "/demo";
@@ -151,29 +260,48 @@ export default function DemoMode() {
     if (window.location.pathname === "/demo") navigate("/", { replace: true });
   }, [navigate]);
 
-  // Auto-start once kiosk is armed.
+  /* Auto-start once. */
   useEffect(() => {
-    if (!kiosk) return;
-    const t = window.setTimeout(() => startRef.current?.(), 700);
+    if (!kiosk || autoStarted.current) return;
+    autoStarted.current = true;
+    const t = window.setTimeout(() => startRef.current?.(), 600);
     return () => window.clearTimeout(t);
   }, [kiosk]);
 
-  // No scrolling while locked down.
+  /* Allow scripted scrolling but block human scrolling while locked down. */
   useEffect(() => {
     if (!kiosk) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const block = (e: Event) => {
+      if (e.cancelable) e.preventDefault();
+    };
+    const keys = new Set([
+      "ArrowUp",
+      "ArrowDown",
+      "PageUp",
+      "PageDown",
+      "Home",
+      "End",
+      " ",
+    ]);
+    const onKey = (e: KeyboardEvent) => {
+      if (keys.has(e.key)) block(e);
+    };
+    window.addEventListener("wheel", block, { passive: false, capture: true });
+    window.addEventListener("touchmove", block, { passive: false, capture: true });
+    window.addEventListener("keydown", onKey, { capture: true });
     return () => {
-      document.body.style.overflow = prev;
+      window.removeEventListener("wheel", block, { capture: true });
+      window.removeEventListener("touchmove", block, { capture: true });
+      window.removeEventListener("keydown", onKey, { capture: true });
     };
   }, [kiosk]);
 
   useEffect(
     () => () => {
-      if (timer.current) window.clearTimeout(timer.current);
-      if (restartTimer.current) window.clearTimeout(restartTimer.current);
+      clearTimer();
+      token.current += 1;
     },
-    [],
+    [clearTimer],
   );
 
   const current = running && index >= 0 ? steps[index] : null;
@@ -183,7 +311,7 @@ export default function DemoMode() {
     <>
       {/* launcher — bottom-right, clears the mobile nav and map rails */}
       <AnimatePresence>
-        {!running && !activeRoute && !kiosk && (
+        {!running && !done && !activeRoute && !kiosk && (
           <motion.button
             type="button"
             onClick={start}
@@ -275,7 +403,7 @@ export default function DemoMode() {
         </div>
       )}
 
-      {/* kiosk shield — swallows every tap/drag/scroll below the progress bar */}
+      {/* kiosk shield — swallows every tap and drag below the progress bar */}
       {kiosk && (
         <div
           aria-hidden
@@ -283,6 +411,54 @@ export default function DemoMode() {
           onContextMenu={(e) => e.preventDefault()}
         />
       )}
+
+      {/* end-of-tour choice */}
+      <AnimatePresence>
+        {done && (
+          <motion.div
+            className="fixed inset-0 z-[1200] grid place-items-center bg-slate-900/30 px-4 backdrop-blur-[3px]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-label="Tour finished"
+              initial={{ opacity: 0, y: 16, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1, transition: panelSpring }}
+              exit={{ opacity: 0, y: 10, scale: 0.97 }}
+              className="w-full max-w-sm rounded-2xl border border-slate-200/80 bg-white p-6 shadow-2xl shadow-slate-900/20"
+            >
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-50 text-emerald-700">
+                <Accessibility size={22} />
+              </span>
+              <h2 className="mt-4 text-xl font-extrabold tracking-tight text-slate-900">
+                That's the tour
+              </h2>
+              <p className="mt-1.5 text-sm font-medium leading-relaxed text-slate-500">
+                You've seen the full loop — accessible routing, live alerts, crowdsourced hazards
+                and the ranger view. Want to drive it yourself, or watch it once more?
+              </p>
+
+              <div className="mt-5 flex flex-col gap-2">
+                <Button size="lg" onClick={kiosk ? explore : () => setDone(false)}>
+                  {kiosk ? "Explore the app" : "Done"}
+                  <ArrowRight size={15} />
+                </Button>
+                <Button size="lg" variant="secondary" onClick={start}>
+                  <RotateCcw size={14} />
+                  Watch it again
+                </Button>
+              </div>
+
+              <p className="mt-4 text-center text-[11px] font-medium text-slate-400">
+                pathfind.viratwiz.com
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
