@@ -37,7 +37,7 @@ export function PhotoLightbox({ photo, onClose }: Props) {
           role="dialog"
           aria-modal="true"
           aria-label="Review photo"
-          className="fixed inset-0 z-[1200] grid place-items-center bg-slate-950/85 p-6 backdrop-blur-sm"
+          className="fixed inset-0 z-[1200] grid place-items-center bg-slate-950/85 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(4.5rem,calc(env(safe-area-inset-top)+3.5rem))] backdrop-blur-sm"
         >
           <motion.button
             type="button"
@@ -48,7 +48,7 @@ export function PhotoLightbox({ photo, onClose }: Props) {
             exit={{ opacity: 0, scale: 0.9 }}
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
-            className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+            className="absolute right-3 top-[max(0.75rem,env(safe-area-inset-top))] z-20 grid h-11 w-11 place-items-center rounded-full bg-white/15 text-white backdrop-blur-md transition-colors hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
           >
             <X size={20} />
           </motion.button>
@@ -62,7 +62,7 @@ export function PhotoLightbox({ photo, onClose }: Props) {
             exit={{ opacity: 0, scale: 0.96 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
             onError={onClose}
-            className="max-h-[85vh] w-auto max-w-[92vw] rounded-2xl object-contain shadow-2xl shadow-slate-950/50"
+            className="max-h-[calc(100dvh-7rem)] w-auto max-w-[calc(100vw-2rem)] rounded-2xl object-contain shadow-2xl shadow-slate-950/50"
           />
         </motion.div>
       ) : null}

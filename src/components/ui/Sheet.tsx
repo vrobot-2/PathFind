@@ -42,16 +42,22 @@ export function Sheet({ open, onClose, children, title, className, variant = "sh
               className,
             )}
           >
-            <div className="mb-4 flex items-start justify-between gap-4">
-              {title ? <h2 className="text-lg font-bold tracking-tight text-slate-900">{title}</h2> : <span />}
+            <div className="mb-4 flex items-start justify-between gap-3">
+              {title ? (
+                <h2 className="min-w-0 max-w-[calc(100%-2.5rem)] break-words text-lg font-bold tracking-tight text-slate-900">
+                  {title}
+                </h2>
+              ) : (
+                <span />
+              )}
               <motion.button
                 whileHover={{ scale: 1.06 }}
                 whileTap={{ scale: 0.94 }}
                 onClick={onClose}
                 aria-label="Close"
-                className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-900"
+                className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-900"
               >
-                <X size={16} />
+                <X size={18} />
               </motion.button>
             </div>
             {children}

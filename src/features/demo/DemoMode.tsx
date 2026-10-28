@@ -1,16 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { Accessibility, ArrowRight, Play, RotateCcw, Square, X } from "lucide-react";
+import { Accessibility, ArrowRight, Play, RotateCcw, X } from "lucide-react";
 import { useAppStore } from "../../store/useAppStore";
 import { Button } from "../../components/ui/Button";
 import { useDemoChrome } from "../../lib/demoChrome";
 import { panelSpring } from "../../motion/presets";
 import { cn } from "../../lib/utils";
+import NarrationCard from "./NarrationCard";
+import Spotlight from "./Spotlight";
+import { useDemoNarration } from "./useDemoNarration";
 
 interface Step {
-  label: string;
-  hint: string;
+  /** Spoken/typed documentary headline (≤ 2 lines on a 390px phone). */
+  headline: string;
+  /** Supporting copy, shown immediately. */
+  support: string;
   ms: number;
   run: () => void;
 }
@@ -54,6 +59,11 @@ export default function DemoMode() {
   const token = useRef(0);
   const autoStarted = useRef(false);
 
+  const narration = useDemoNarration({
+    active: running && index >= 0,
+    index,
+  });
+
   const clearTimer = useCallback(() => {
     if (timer.current) window.clearTimeout(timer.current);
     timer.current = null;
@@ -62,24 +72,24 @@ export default function DemoMode() {
   const buildSteps = useCallback((): Step[] => {
     return [
       {
-        label: "Explore the park",
-        hint: "Marsh Creek State Park · 1,784 acres · 8 trails mapped",
-        ms: 3600,
+        headline: "1,784 acres. Eight trails.",
+        support: "Marsh Creek State Park, Pennsylvania — every path mapped.",
+        ms: 8900,
         run: () => {
           navigate("/");
           window.scrollTo({ top: 0, behavior: "smooth" });
         },
       },
       {
-        label: "How accessible is the park?",
-        hint: "2 of 8 trails are step-free · 2.2 miles",
-        ms: 3400,
+        headline: "Only two trails are step-free.",
+        support: "2.2 miles of accessible path, checked by grade and width.",
+        ms: 8200,
         run: () => scrollToRatio(0.34),
       },
       {
-        label: "Scan and take it with you",
-        hint: "The whole app runs in the browser — no download",
-        ms: 3400,
+        headline: "Take the whole park with you.",
+        support: "Scan the code — it runs in your browser, no download.",
+        ms: 8900,
         run: () => {
           const qr = document.querySelector('img[src="/qr-pathfind.svg"]');
           if (qr) {
@@ -90,18 +100,18 @@ export default function DemoMode() {
         },
       },
       {
-        label: "Choose a mobility profile",
-        hint: "Wheelchair → step-free trails only",
-        ms: 2600,
+        headline: "Choose how you move.",
+        support: "Wheelchair keeps step-free trails at 5% grade or less.",
+        ms: 9100,
         run: () => {
           scrollToTop();
           useAppStore.getState().setProfile("wheelchair");
         },
       },
       {
-        label: "Open the live map",
-        hint: "Compatible trails glow, the rest dim",
-        ms: 3200,
+        headline: "The map adapts to you.",
+        support: "Compatible trails glow. Everything else fades back.",
+        ms: 8600,
         run: () => {
           navigate("/map");
           window.scrollTo({ top: 0 });
@@ -109,8 +119,8 @@ export default function DemoMode() {
         },
       },
       {
-        label: "Start the step-free loop",
-        hint: "Lakeside Accessible Loop · 1.6 mi · 2% grade",
+        headline: "Lakeside Accessible Loop.",
+        support: "1.6 miles of paved trail and boardwalk, 2% maximum grade.",
         ms: 14000,
         run: () => {
           const s = useAppStore.getState();
@@ -124,9 +134,9 @@ export default function DemoMode() {
         },
       },
       {
-        label: "Drop a hazard report",
-        hint: "Visitors flag issues with a photo",
-        ms: 4200,
+        headline: "A hazard, right where it happened.",
+        support: "A visitor drops a report on the trail — no phone call.",
+        ms: 5500,
         run: () => {
           const s = useAppStore.getState();
           s.setPinMode("report");
@@ -137,9 +147,9 @@ export default function DemoMode() {
         },
       },
       {
-        label: "Rangers see it instantly",
-        hint: "Traffic, response times and a live hazard feed",
-        ms: 5000,
+        headline: "Rangers see it instantly.",
+        support: "Traffic, response times and a live hazard feed.",
+        ms: 8800,
         run: () => {
           const s = useAppStore.getState();
           s.setPinMode("none");
@@ -150,12 +160,24 @@ export default function DemoMode() {
         },
       },
       {
-        label: "Triage and resolve",
-        hint: "Report queue → ranger note → resolved",
-        ms: 5200,
+        headline: "Queue. Ranger note. Resolved.",
+        support: "That's the whole loop, from trailhead to ranger desk.",
+        ms: 7600,
         run: () => {
           navigate("/admin/reports");
           window.scrollTo({ top: 0 });
+          // On a phone the queue starts below the fold — bring its top into view.
+          window.setTimeout(() => {
+            const queue = document.querySelector<HTMLElement>("main section.min-w-0");
+            if (!queue) return;
+            const rect = queue.getBoundingClientRect();
+            if (rect.top > window.innerHeight * 0.45) {
+              window.scrollTo({
+                top: window.scrollY + rect.top - 160,
+                behavior: "smooth",
+              });
+            }
+          }, 700);
         },
       },
     ];
@@ -309,6 +331,18 @@ export default function DemoMode() {
 
   return (
     <>
+      {/* single audio element; src changes with the step index */}
+      <audio
+        ref={narration.audioRef}
+        src={narration.src}
+        preload="auto"
+        aria-hidden
+        className="hidden"
+      />
+
+      {/* spotlight cutout for the specific thing being narrated */}
+      <Spotlight active={running && index >= 0} stepIndex={index} />
+
       {/* launcher — bottom-right, clears the mobile nav and map rails */}
       <AnimatePresence>
         {!running && !done && !activeRoute && !kiosk && (
@@ -337,55 +371,24 @@ export default function DemoMode() {
             animate={{ opacity: 1, y: 0, transition: panelSpring }}
             exit={{ opacity: 0, y: 16, transition: { duration: 0.18 } }}
             className={cn(
-              "fixed inset-x-3 z-[1150] sm:left-1/2 sm:right-auto sm:w-[420px] sm:-translate-x-1/2",
+              "fixed inset-x-3 z-[1150] sm:left-1/2 sm:right-auto sm:w-[440px] sm:-translate-x-1/2",
               // the walk HUD owns the bottom on mobile, so the demo bar moves up
               activeRoute ? "top-[4.6rem] bottom-auto" : "bottom-3",
             )}
           >
-            <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 shadow-2xl shadow-slate-900/15 backdrop-blur-md">
-              <div className="h-1 w-full bg-slate-100">
-                <motion.div
-                  className="h-full rounded-r-full bg-emerald-600"
-                  animate={{ width: `${Math.round(progress * 100)}%` }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                />
-              </div>
-              <div className="flex items-center gap-3 px-3.5 py-3">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
-                  <Accessibility size={17} />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-700">
-                    {kiosk ? (
-                      <>Live demo · auto-playing</>
-                    ) : (
-                      <>
-                        Step {(index + 1).toString().padStart(2, "0")} /{" "}
-                        {steps.length.toString().padStart(2, "0")}
-                      </>
-                    )}
-                  </p>
-                  <p className="mt-0.5 truncate text-[13px] font-bold tracking-tight text-slate-900">
-                    {current?.label}
-                  </p>
-                  <p className="truncate text-[11px] font-medium text-slate-500">{current?.hint}</p>
-                </div>
-                {!kiosk && (
-                  <button
-                    type="button"
-                    onClick={stop}
-                    className={cn(
-                      "grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-500",
-                      "hover:bg-rose-50 hover:text-rose-600",
-                    )}
-                    aria-label="Stop the demo"
-                    title="Stop the demo"
-                  >
-                    <Square size={13} />
-                  </button>
-                )}
-              </div>
-            </div>
+            <NarrationCard
+              stepIndex={index}
+              total={steps.length}
+              headline={current?.headline ?? ""}
+              support={current?.support ?? ""}
+              progress={progress}
+              kiosk={kiosk}
+              muted={narration.muted}
+              blocked={narration.blocked}
+              onToggleMuted={narration.toggleMuted}
+              onEnableSound={narration.enableSound}
+              onStop={stop}
+            />
           </motion.div>
         )}
       </AnimatePresence>

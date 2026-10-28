@@ -169,7 +169,7 @@ export function ReportModal(): JSX.Element | null {
             initial={{ opacity: 0, scale: 0.94, y: 14 }}
             animate={{ opacity: 1, scale: 1, y: 0, transition: panelSpring }}
             exit={{ opacity: 0, scale: 0.96, y: 8, transition: { duration: 0.18 } }}
-            className="relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-slate-200/80 bg-white p-6 shadow-2xl"
+            className="relative z-10 flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-4 shadow-2xl sm:p-6"
           >
             {!success && (
               <motion.button
@@ -178,9 +178,9 @@ export function ReportModal(): JSX.Element | null {
                 aria-label="Close report"
                 whileHover={{ scale: 1.06 }}
                 whileTap={{ scale: 0.94 }}
-                className="absolute right-4 top-4 z-20 grid h-8 w-8 place-items-center rounded-full bg-slate-100 text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-900"
+                className="absolute right-2 top-2 z-20 grid h-11 w-11 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-900 sm:right-4 sm:top-4"
               >
-                <X size={16} />
+                <X size={18} />
               </motion.button>
             )}
 
@@ -191,6 +191,7 @@ export function ReportModal(): JSX.Element | null {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                className="min-h-0 flex-1 overflow-y-auto"
               >
                 {success ? (
                   <SuccessState />

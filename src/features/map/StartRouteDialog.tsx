@@ -106,18 +106,18 @@ export default function StartRouteDialog() {
               aria-label="Close"
               whileHover={{ scale: 1.06 }}
               whileTap={{ scale: 0.94 }}
-              className="absolute right-3 top-3 z-20 grid h-9 w-9 place-items-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900"
+              className="absolute right-2.5 top-2.5 z-20 grid h-11 w-11 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 sm:right-3 sm:top-3"
             >
-              <X size={16} />
+              <X size={18} />
             </motion.button>
 
             <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-3 pt-5 sm:px-6 sm:pt-6">
-              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-700">
+              <p className="pr-14 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-700">
                 Start route
               </p>
               <h2
                 id="start-route-title"
-                className="mt-1 pr-9 text-xl font-extrabold tracking-tight text-slate-900"
+                className="mt-1 min-w-0 pr-14 text-xl font-extrabold tracking-tight text-slate-900"
               >
                 How are you travelling?
               </h2>
@@ -192,11 +192,11 @@ export default function StartRouteDialog() {
               )}
             </div>
 
-            <div className="flex shrink-0 flex-col-reverse gap-2 border-t border-slate-200/80 bg-white px-4 py-3 sm:flex-row sm:items-center sm:px-6 sm:py-4">
+            <div className="flex shrink-0 flex-col-reverse gap-2 border-t border-slate-200/80 bg-white px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 sm:flex-row sm:items-center sm:px-6 sm:py-4">
               <Button
                 variant="secondary"
                 onClick={cancelStart}
-                className="h-11 w-full sm:flex-1"
+                className="h-11 w-full shrink-0 sm:flex-1"
               >
                 Cancel
               </Button>

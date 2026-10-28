@@ -90,23 +90,28 @@ export default function TrailDetailSheet({ trailId, onClose }: Props) {
           exit="exit"
           role="dialog"
           aria-label={`${trail.name} trail details`}
-          className="fixed bottom-4 left-4 right-4 z-[900] max-h-[80vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white shadow-2xl shadow-slate-900/15 sm:left-auto sm:w-[420px]"
+          className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 right-4 z-[900] flex max-h-[80vh] flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-2xl shadow-slate-900/15 sm:left-auto sm:w-[420px]"
         >
           {/* grab handle + close */}
-          <div className="relative flex items-center justify-center px-4 pb-1 pt-2.5">
+          <div className="relative flex min-h-[3.25rem] shrink-0 items-center justify-center px-4 pb-1 pt-2.5">
             <span aria-hidden="true" className="h-1.5 w-10 rounded-full bg-slate-200" />
             <motion.button
               type="button"
               {...pressable}
               onClick={onClose}
               aria-label="Close trail details"
-              className="absolute right-2.5 top-1.5 grid h-7 w-7 place-items-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600/40"
+              className="absolute right-1.5 top-1.5 z-20 grid h-11 w-11 shrink-0 place-items-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600/40"
             >
-              <X size={15} />
+              <X size={18} />
             </motion.button>
           </div>
 
-          <motion.div variants={staggerList} initial="initial" animate="animate" className="px-4">
+          <motion.div
+            variants={staggerList}
+            initial="initial"
+            animate="animate"
+            className="min-h-0 flex-1 overflow-y-auto px-4"
+          >
             <motion.div variants={staggerItem}>
               <TrailHero trail={trail} profile={profile} />
             </motion.div>
@@ -123,55 +128,62 @@ export default function TrailDetailSheet({ trailId, onClose }: Props) {
               <LiveConditions reports={trailReports} onReport={handleReport} />
             </motion.div>
 
-            <motion.div variants={staggerItem} className="mt-4">
+            <motion.div variants={staggerItem} className="mt-4 pb-4">
               <ReviewsSection trailId={trail.id} />
             </motion.div>
+          </motion.div>
 
-            {/* sticky CTA row */}
-            <motion.div
-              variants={staggerItem}
-              className="sticky bottom-0 z-10 -mx-4 mt-4 rounded-b-2xl border-t border-slate-200/80 bg-white/95 px-4 py-3 backdrop-blur"
-            >
-              <div className="flex items-center gap-2">
+          {/* CTA row — fixed to the bottom of the sheet, never scrolls away */}
+          <motion.div
+            variants={staggerItem}
+            initial="initial"
+            animate="animate"
+            className="z-10 shrink-0 border-t border-slate-200/80 bg-white/95 px-4 pb-3 pt-3 backdrop-blur"
+          >
+            <div className="flex min-w-0 items-center gap-2">
+              <Button
+                onClick={() => requestStart(trail)}
+                className="min-w-0 flex-1 whitespace-nowrap px-3 text-sm sm:px-5"
+                aria-label={`Start route on ${trail.name}`}
+              >
+                <Navigation size={16} className="shrink-0" />
+                Start route
+              </Button>
+
+              <div className="relative shrink-0">
                 <Button
-                  onClick={() => requestStart(trail)}
-                  className="flex-1"
-                  aria-label={`Start route on ${trail.name}`}
+                  variant="secondary"
+                  size="icon"
+                  onClick={() => void handleShare()}
+                  aria-label="Share trail"
+                  aria-live="polite"
+                  className="h-11 w-11 shrink-0"
                 >
-                  <Navigation size={16} />
-                  Start route
+                  {copied ? <Check size={16} className="text-emerald-600" /> : <Share2 size={16} />}
                 </Button>
-
-                <div className="relative">
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    onClick={() => void handleShare()}
-                    aria-label="Share trail"
-                    aria-live="polite"
-                  >
-                    {copied ? <Check size={16} className="text-emerald-600" /> : <Share2 size={16} />}
-                  </Button>
-                  <AnimatePresence>
-                    {copied ? (
-                      <motion.span
-                        initial={{ opacity: 0, y: 4, scale: 0.96 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 4, scale: 0.96 }}
-                        transition={{ duration: 0.16 }}
-                        className="pointer-events-none absolute -top-8 right-0 whitespace-nowrap rounded-full bg-slate-900 px-2.5 py-1 text-[10px] font-semibold text-white shadow-lg shadow-slate-900/20"
-                      >
-                        Copied
-                      </motion.span>
-                    ) : null}
-                  </AnimatePresence>
-                </div>
-
-                <Button variant="ghost" onClick={onClose}>
-                  Close
-                </Button>
+                <AnimatePresence>
+                  {copied ? (
+                    <motion.span
+                      initial={{ opacity: 0, y: 4, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 4, scale: 0.96 }}
+                      transition={{ duration: 0.16 }}
+                      className="pointer-events-none absolute -top-8 right-0 whitespace-nowrap rounded-full bg-slate-900 px-2.5 py-1 text-[10px] font-semibold text-white shadow-lg shadow-slate-900/20"
+                    >
+                      Copied
+                    </motion.span>
+                  ) : null}
+                </AnimatePresence>
               </div>
-            </motion.div>
+
+              <Button
+                variant="ghost"
+                onClick={onClose}
+                className="h-11 shrink-0 px-3 text-sm sm:px-5"
+              >
+                Close
+              </Button>
+            </div>
           </motion.div>
         </motion.div>
       ) : null}

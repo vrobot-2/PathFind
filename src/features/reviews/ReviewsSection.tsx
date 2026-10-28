@@ -180,7 +180,7 @@ export function ReviewsSection({ trailId }: Props) {
           onClick={toggleForm}
           aria-expanded={formOpen}
           aria-controls="review-form"
-          className="h-7 px-2 text-xs"
+          className="h-9 px-2.5 text-xs"
         >
           <PenLine size={13} />
           {formOpen ? "Cancel" : "Write a review"}
@@ -258,7 +258,7 @@ export function ReviewsSection({ trailId }: Props) {
                 ) : null}
               </AnimatePresence>
 
-              <div className="mt-2.5 flex items-center justify-end gap-2">
+              <div className="mt-2.5 flex flex-wrap items-center justify-end gap-2">
                 <span className="mr-auto text-[10px] font-medium text-slate-400">
                   {text.length}/400
                 </span>

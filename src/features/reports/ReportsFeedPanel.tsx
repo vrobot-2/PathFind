@@ -48,7 +48,7 @@ export function ReportsFeedPanel() {
       variants={panelSlideIn}
       initial="initial"
       animate="animate"
-      className="pointer-events-auto w-[340px] overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 shadow-xl shadow-slate-200/50 backdrop-blur-md"
+      className="pointer-events-auto w-[340px] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 shadow-xl shadow-slate-200/50 backdrop-blur-md"
     >
       {/* header */}
       <div className="flex items-center gap-2 px-3.5 py-3">
@@ -80,7 +80,7 @@ export function ReportsFeedPanel() {
             aria-label="Refresh reports"
             whileHover={{ scale: 1.06 }}
             whileTap={{ scale: 0.94 }}
-            className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-900 disabled:opacity-60"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-900 disabled:opacity-60"
           >
             <RefreshCw size={14} className={cn(reportsLoading && "animate-spin")} />
           </motion.button>
@@ -195,7 +195,7 @@ export function ReportsFeedPanel() {
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.94 }}
                           className={cn(
-                            "mt-0.5 flex h-8 shrink-0 items-center gap-0.5 rounded-full border px-2 text-xs font-semibold tabular-nums transition-colors duration-200",
+                            "mt-0.5 flex h-9 shrink-0 items-center gap-0.5 rounded-full border px-2.5 text-xs font-semibold tabular-nums transition-colors duration-200",
                             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600/30 disabled:opacity-70",
                             upvoting
                               ? "border-emerald-200 bg-emerald-50 text-emerald-700"

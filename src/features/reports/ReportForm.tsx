@@ -130,16 +130,18 @@ export function ReportForm({ lat, lng, onSuccess, onCancel }: ReportFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="flex items-start justify-between gap-3 pr-9">
-        <div>
+      <div className="flex flex-col items-start gap-2 pr-14 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:gap-3">
+        <div className="w-full min-w-0 sm:w-auto sm:flex-1">
           <h2 className="text-lg font-bold tracking-tight text-slate-900">Report a find</h2>
           <p className="mt-0.5 text-xs font-medium text-slate-500">
             Help the next visitor know what to expect.
           </p>
         </div>
-        <span className="mt-0.5 inline-flex shrink-0 items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold tabular-nums text-slate-500">
-          <MapPin size={11} />
-          {lat.toFixed(5)}, {lng.toFixed(5)}
+        <span className="mt-0.5 inline-flex max-w-full shrink-0 items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold tabular-nums text-slate-500">
+          <MapPin size={11} className="shrink-0" />
+          <span className="truncate">
+            {lat.toFixed(5)}, {lng.toFixed(5)}
+          </span>
         </span>
       </div>
 
@@ -301,9 +303,9 @@ export function ReportForm({ lat, lng, onSuccess, onCancel }: ReportFormProps) {
               onClick={() => setPhotoDataUrl(null)}
               whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.92 }}
-              className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-slate-900/65 text-white backdrop-blur-sm transition-colors hover:bg-slate-900/80"
+              className="absolute right-2 top-2 z-10 grid h-10 w-10 place-items-center rounded-full bg-slate-900/65 text-white backdrop-blur-sm transition-colors hover:bg-slate-900/80"
             >
-              <X size={15} />
+              <X size={16} />
             </motion.button>
             <span className="absolute bottom-2 left-2 rounded-full bg-slate-900/65 px-2.5 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
               Photo attached
@@ -372,7 +374,7 @@ export function ReportForm({ lat, lng, onSuccess, onCancel }: ReportFormProps) {
         )}
       </AnimatePresence>
 
-      <div className="grid grid-cols-[1fr_auto] gap-2 pt-0.5">
+      <div className="grid grid-cols-1 gap-2 pt-0.5 sm:grid-cols-[1fr_auto]">
         <Button type="submit" disabled={submitting} className="w-full">
           {submitting ? (
             <>
