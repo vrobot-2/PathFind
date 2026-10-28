@@ -148,7 +148,7 @@ export default function NarrationCard({
         {/* documentary caption */}
         <p
           key={`headline-${stepIndex}`}
-          className="mt-2 min-h-[3.1rem] text-balance break-words text-lg font-extrabold leading-snug tracking-tight text-slate-900 sm:min-h-[4.2rem] sm:text-2xl"
+          className="mt-2 min-h-[1.5em] text-balance break-words text-lg font-extrabold leading-snug tracking-tight text-slate-900 sm:text-2xl"
         >
           <span aria-hidden data-demo-typed>{typed}</span>
           <Caret animate={!reduce} />
