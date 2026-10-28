@@ -93,7 +93,7 @@ function ProfileMenu() {
   if (pathname !== "/map" || cleanMap) return null;
 
   return (
-    <div ref={rootRef} className="relative shrink-0">
+    <div ref={rootRef} className="relative min-w-0 shrink">
       <motion.button
         type="button"
         data-testid="profile-menu-pill"
@@ -103,10 +103,12 @@ function ProfileMenu() {
         aria-haspopup="menu"
         aria-expanded={open}
         title={`Mobility profile: ${current.label}`}
-        className="flex h-11 shrink-0 items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-2.5 text-slate-700 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600/40 sm:px-3"
+        className="flex h-11 w-full min-w-0 max-w-[calc(100vw-8.5rem)] items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-2.5 text-slate-700 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600/40 sm:px-3"
       >
         <CurrentIcon size={17} strokeWidth={2.2} className="shrink-0 text-emerald-700" />
-        <span className="text-xs font-semibold sm:text-[13px]">{current.label}</span>
+        <span className="min-w-0 truncate text-xs font-semibold sm:text-[13px]">
+          {current.label}
+        </span>
         <motion.span
           animate={{ rotate: open ? 180 : 0 }}
           transition={{ duration: 0.18, ease: "easeOut" }}
@@ -182,7 +184,7 @@ function ProfileMenu() {
 
 export default function AppNavbar() {
   return (
-    <header className="sticky top-0 z-50 h-16 border-b border-slate-200 bg-white/90 backdrop-blur-md">
+    <header className="sticky top-0 z-[700] h-16 border-b border-slate-200 bg-white/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-2 px-3 sm:gap-3 sm:px-6 lg:px-8">
         {/* ---------- brand ---------- */}
         <NavLink
