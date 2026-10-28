@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Accessibility, Square, Volume2, VolumeX } from "lucide-react";
+import { Pause, Play, Volume2, VolumeX, X, Accessibility } from "lucide-react";
 import { cn } from "../../lib/utils";
 
 interface Props {
@@ -12,9 +12,11 @@ interface Props {
   kiosk: boolean;
   muted: boolean;
   blocked: boolean;
+  paused: boolean;
   onToggleMuted: () => void;
   onEnableSound: () => void;
-  onStop: () => void;
+  onTogglePause: () => void;
+  onCancel: () => void;
 }
 
 const CHAR_MS = 26;
@@ -86,9 +88,11 @@ export default function NarrationCard({
   kiosk,
   muted,
   blocked,
+  paused,
   onToggleMuted,
   onEnableSound,
-  onStop,
+  onTogglePause,
+  onCancel,
 }: Props) {
   const reduce = useReducedMotion() ?? false;
   const typed = useTypewriter(headline, !reduce);
@@ -102,9 +106,14 @@ export default function NarrationCard({
       <div className="px-3.5 pb-3 pt-2.5 sm:px-4 sm:pb-4 sm:pt-3">
         {/* compact status row: label + step counter + progress + audio controls */}
         <div className="flex items-center gap-2">
-          <span className="flex shrink-0 items-center gap-1 text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-700">
+          <span
+            className={cn(
+              "flex shrink-0 items-center gap-1 text-[10px] font-bold uppercase tracking-[0.14em]",
+              paused ? "text-amber-600" : "text-emerald-700",
+            )}
+          >
             <Accessibility size={12} strokeWidth={2.4} aria-hidden />
-            {kiosk ? "Live demo" : "Judge demo"}
+            {paused ? "Paused" : kiosk ? "Live demo" : "Judge demo"}
           </span>
           <span className="shrink-0 text-[10px] font-semibold tabular-nums text-slate-400">
             Step {(stepIndex + 1).toString().padStart(2, "0")} /{" "}
@@ -124,25 +133,38 @@ export default function NarrationCard({
             aria-pressed={muted}
             title={muted ? "Unmute narration" : "Mute narration"}
             className={cn(
-              "grid h-7 w-7 shrink-0 place-items-center rounded-full transition-colors",
+              "grid h-8 w-8 shrink-0 place-items-center rounded-full transition-colors",
               muted
                 ? "bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600"
                 : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100",
             )}
           >
-            {muted ? <VolumeX size={13} /> : <Volume2 size={13} />}
+            {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
           </button>
-          {!kiosk && (
-            <button
-              type="button"
-              onClick={onStop}
-              className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-500 transition-colors hover:bg-rose-50 hover:text-rose-600"
-              aria-label="Stop the demo"
-              title="Stop the demo"
-            >
-              <Square size={11} />
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={onTogglePause}
+            aria-label={paused ? "Resume demo" : "Pause demo"}
+            aria-pressed={paused}
+            title={paused ? "Resume demo" : "Pause demo"}
+            className={cn(
+              "grid h-8 w-8 shrink-0 place-items-center rounded-full transition-colors",
+              paused
+                ? "bg-amber-100 text-amber-700 hover:bg-amber-200"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900",
+            )}
+          >
+            {paused ? <Play size={13} /> : <Pause size={13} />}
+          </button>
+          <button
+            type="button"
+            onClick={onCancel}
+            aria-label="Cancel the demo"
+            title="Cancel the demo"
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-500 transition-colors hover:bg-rose-50 hover:text-rose-600"
+          >
+            <X size={14} />
+          </button>
         </div>
 
         {/* documentary caption */}

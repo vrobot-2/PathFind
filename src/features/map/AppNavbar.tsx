@@ -106,7 +106,7 @@ function ProfileMenu() {
         className="flex h-11 w-full min-w-0 max-w-[calc(100vw-8.5rem)] items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-2.5 text-slate-700 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600/40 sm:px-3"
       >
         <CurrentIcon size={17} strokeWidth={2.2} className="shrink-0 text-emerald-700" />
-        <span className="min-w-0 truncate text-xs font-semibold sm:text-[13px]">
+        <span className="hidden min-[380px]:inline min-w-0 truncate text-xs font-semibold sm:text-[13px]">
           {current.label}
         </span>
         <motion.span
@@ -217,7 +217,7 @@ export default function AppNavbar() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className={cn(
-                      "relative flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-semibold transition-colors sm:px-2.5",
+                      "relative flex h-10 w-10 items-center justify-center rounded-lg px-0 py-0 text-sm font-semibold transition-colors sm:h-auto sm:w-auto sm:justify-start sm:gap-2 sm:px-2.5 sm:py-2",
                       isActive
                         ? "text-emerald-700"
                         : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",

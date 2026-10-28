@@ -52,8 +52,14 @@ export default function DemoMode() {
   const [steps, setSteps] = useState<Step[]>([]);
   const [done, setDone] = useState(false);
   const [kiosk, setKiosk] = useState(false);
+  const [paused, setPaused] = useState(false);
 
   const kioskRef = useRef(false);
+  const pausedRef = useRef(false);
+  const endsAt = useRef(0);
+  const remaining = useRef(0);
+  const listRef = useRef<Step[]>([]);
+  const indexRef = useRef(-1);
   const startRef = useRef<(() => void) | null>(null);
   const timer = useRef<number | null>(null);
   const token = useRef(0);
@@ -62,6 +68,7 @@ export default function DemoMode() {
   const narration = useDemoNarration({
     active: running && index >= 0,
     index,
+    paused,
   });
 
   const clearTimer = useCallback(() => {
@@ -188,6 +195,8 @@ export default function DemoMode() {
     setRunning(false);
     setIndex(-1);
     setDone(true);
+    pausedRef.current = false;
+    setPaused(false);
     useDemoChrome.getState().setCleanMap(false);
     const s = useAppStore.getState();
     s.setPinMode("none");
@@ -201,6 +210,8 @@ export default function DemoMode() {
         finish();
         return;
       }
+      listRef.current = list;
+      indexRef.current = i;
       setIndex(i);
       setSteps(list);
       try {
@@ -208,10 +219,31 @@ export default function DemoMode() {
       } catch {
         /* a step failing must never stall the tour */
       }
+      endsAt.current = Date.now() + list[i].ms;
       timer.current = window.setTimeout(() => runStep(list, i + 1, myToken), list[i].ms);
     },
     [finish],
   );
+
+  /** Freeze the tour where it is — audio included — and resume from the same spot. */
+  const togglePause = useCallback(() => {
+    if (!running) return;
+    const next = !pausedRef.current;
+    pausedRef.current = next;
+    setPaused(next);
+
+    if (next) {
+      clearTimer();
+      remaining.current = Math.max(0, endsAt.current - Date.now());
+      return;
+    }
+
+    const nextIndex = indexRef.current + 1;
+    timer.current = window.setTimeout(
+      () => runStep(listRef.current, nextIndex, token.current),
+      Math.max(0, remaining.current),
+    );
+  }, [clearTimer, runStep, running]);
 
   const start = useCallback(() => {
     clearTimer();
@@ -221,6 +253,9 @@ export default function DemoMode() {
     setIndex(0);
     setRunning(true);
     setDone(false);
+    pausedRef.current = false;
+    setPaused(false);
+    remaining.current = 0;
     useDemoChrome.getState().setCleanMap(false);
     window.scrollTo({ top: 0 });
 
@@ -240,6 +275,8 @@ export default function DemoMode() {
     setRunning(false);
     setIndex(-1);
     setDone(false);
+    pausedRef.current = false;
+    setPaused(false);
     useDemoChrome.getState().setCleanMap(false);
     const s = useAppStore.getState();
     s.setPinMode("none");
@@ -256,6 +293,8 @@ export default function DemoMode() {
     setRunning(false);
     setIndex(-1);
     setDone(false);
+    pausedRef.current = false;
+    setPaused(false);
     useDemoChrome.getState().setCleanMap(false);
     const s = useAppStore.getState();
     s.setPinMode("none");

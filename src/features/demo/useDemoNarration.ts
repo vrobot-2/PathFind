@@ -12,6 +12,8 @@ interface Options {
   active: boolean;
   /** 0-based step index. Playback is keyed to this value only. */
   index: number;
+  /** True while the tour is paused — narration holds its position. */
+  paused?: boolean;
 }
 
 interface Narration {
@@ -29,7 +31,7 @@ interface Narration {
  * One `<audio>` element, one file per step. The play effect depends only on
  * (active, step index, muted), so re-renders elsewhere never restart the clip.
  */
-export function useDemoNarration({ active, index }: Options): Narration {
+export function useDemoNarration({ active, index, paused = false }: Options): Narration {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [muted, setMuted] = useState(sessionMuted);
   const [blocked, setBlocked] = useState(false);
@@ -66,6 +68,11 @@ export function useDemoNarration({ active, index }: Options): Narration {
       return;
     }
 
+    if (paused) {
+      el.pause();
+      return;
+    }
+
     if (el.readyState < 1) {
       // Fresh src each step: wait for metadata so play() lines up with the file.
       const onReady = () => play();
@@ -74,7 +81,7 @@ export function useDemoNarration({ active, index }: Options): Narration {
     }
 
     play();
-  }, [active, index, muted, play]);
+  }, [active, index, muted, paused, play]);
 
   /* Pause whenever the tab is hidden or the component goes away. */
   useEffect(() => {
