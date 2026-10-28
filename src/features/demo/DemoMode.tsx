@@ -38,13 +38,13 @@ export default function DemoMode() {
         label: "Explore the park",
         hint: "Marsh Creek State Park · 8 trails mapped",
         ms: 3000,
-        run: () => navigate("/"),
+        run: () => { /* experiment: no navigate */ },
       },
       {
         label: "Choose a mobility profile",
         hint: "Wheelchair → step-free routes only",
         ms: 2600,
-        run: () => store.setProfile("wheelchair"),
+        run: () => { store.setProfile("walker"); },
       },
       {
         label: "Open the live map",

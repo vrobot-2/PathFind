@@ -1,0 +1,4 @@
+{
+  "snapshotAt": "2026-10-28T14:41:30.137Z",
+  "note": "Server seed time for the snapshot. Relative ages are re-anchored to the visitor's clock on first boot of each storage version."
+}

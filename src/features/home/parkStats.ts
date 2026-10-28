@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { api } from "../../lib/api";
 import { useAppStore } from "../../store/useAppStore";
 import type { ParkMetrics } from "../../types";
 
@@ -13,7 +14,7 @@ export const TRAIL_MI_TOTAL = 20.1;
 export const STEP_FREE_MI = 2.2;
 export const LAKESIDE_LOOP_MI = 1.6;
 
-/** Last verified /api/metrics payload, used if the live fetch is slow or offline. */
+/** Fallback metrics shown until the local store has been read. */
 export const SEED_METRICS: ParkMetrics = {
   activeVisitors: 420,
   openHazards: 9,
@@ -29,9 +30,9 @@ export function useParkMetrics(): ParkMetrics {
   useEffect(() => {
     let cancelled = false;
 
-    fetch("/api/metrics")
-      .then((res) => (res.ok ? res.json() : Promise.reject(new Error("metrics unavailable"))))
-      .then((data: Partial<ParkMetrics>) => {
+    api
+      .getMetrics()
+      .then((data) => {
         if (cancelled) return;
         setMetrics((prev) => ({
           activeVisitors: data.activeVisitors ?? prev.activeVisitors,

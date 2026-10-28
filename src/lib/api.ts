@@ -9,37 +9,38 @@ import type {
   TrailFeature,
   TrailReview,
 } from "../types";
+import * as localDb from "./localDb";
 
-const BASE = "/api";
-
-async function req<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
-    ...init,
-  });
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText} — ${path}`);
-  return res.json() as Promise<T>;
-}
-
+/**
+ * Frontend-only API adapter. The same surface the UI has always used, backed by
+ * the versioned browser store instead of the Bun server. Every method stays
+ * async so call sites do not need to change.
+ */
 export const api = {
-  getPark: () => req<Park[]>("/parks").then((p) => p[0]),
-  getTrails: () => req<Trail[]>("/trails"),
-  getTrail: (id: string) => req<Trail>(`/trails/${id}`),
-  getFeatures: (trailId?: string) =>
-    req<TrailFeature[]>(`/features${trailId ? `?trailId=${trailId}` : ""}`),
-  getReports: (status?: string) =>
-    req<Report[]>(`/reports${status ? `?status=${status}` : ""}`),
-  createReport: (input: NewReportInput) =>
-    req<Report>("/reports", { method: "POST", body: JSON.stringify(input) }),
-  updateReport: (id: string, patch: Partial<Pick<Report, "status" | "rangerNote">>) =>
-    req<Report>(`/reports/${id}`, { method: "PATCH", body: JSON.stringify(patch) }),
-  upvoteReport: (id: string) => req<Report>(`/reports/${id}/upvote`, { method: "POST" }),
-  getTraffic: () => req<TrafficPoint[]>("/traffic"),
-  getReviews: (trailId?: string) =>
-    req<TrailReview[]>(`/reviews${trailId ? `?trailId=${trailId}` : ""}`),
-  createReview: (input: NewReviewInput) =>
-    req<TrailReview>("/reviews", { method: "POST", body: JSON.stringify(input) }),
-  updateTrail: (id: string, patch: Partial<Trail>) =>
-    req<Trail>(`/trails/${id}`, { method: "PATCH", body: JSON.stringify(patch) }),
-  getMetrics: () => req<ParkMetrics>("/metrics"),
+  getPark: async (): Promise<Park> => {
+    const park = localDb.getParks()[0];
+    if (!park) throw new Error("no park data available");
+    return park;
+  },
+  getTrails: async (): Promise<Trail[]> => localDb.getTrails(),
+  getTrail: async (id: string): Promise<Trail> => localDb.getTrail(id),
+  getFeatures: async (trailId?: string): Promise<TrailFeature[]> =>
+    localDb.getFeatures(trailId),
+  getReports: async (status?: string): Promise<Report[]> =>
+    localDb.getReports(status),
+  createReport: async (input: NewReportInput): Promise<Report> =>
+    localDb.createReport(input),
+  updateReport: async (
+    id: string,
+    patch: Partial<Pick<Report, "status" | "rangerNote">>
+  ): Promise<Report> => localDb.updateReport(id, patch),
+  upvoteReport: async (id: string): Promise<Report> => localDb.upvoteReport(id),
+  getTraffic: async (): Promise<TrafficPoint[]> => localDb.getTraffic(),
+  getReviews: async (trailId?: string): Promise<TrailReview[]> =>
+    localDb.getReviews(trailId),
+  createReview: async (input: NewReviewInput): Promise<TrailReview> =>
+    localDb.createReview(input),
+  updateTrail: async (id: string, patch: Partial<Trail>): Promise<Trail> =>
+    localDb.updateTrail(id, patch),
+  getMetrics: async (): Promise<ParkMetrics> => localDb.getMetrics(),
 };
