@@ -42,6 +42,7 @@ import {
 import { cn, miles, timeAgo } from "../../lib/utils";
 import { trailColor } from "../../styles/tokens";
 import { useAppStore } from "../../store/useAppStore";
+import { useDemoChrome } from "../../lib/demoChrome";
 import {
   PROFILE_LABEL,
   SURFACE_LABEL,
@@ -211,6 +212,78 @@ function FitRoute({ trail }: { trail: Trail | null }) {
   return null;
 }
 
+/* ------------------------------------------------------------------ */
+/* demo follow camera                                                 */
+/* ------------------------------------------------------------------ */
+
+/** Where the walker sits vertically in the map viewport while following. */
+const FOLLOW_ANCHOR_Y = 0.34;
+const FOLLOW_ZOOM = 16;
+/** ~10 fps ceiling for camera updates. */
+const FOLLOW_INTERVAL_MS = 100;
+
+/**
+ * Keeps the simulated walker in the top third of the map (clear of the walk HUD)
+ * while the clean demo map is active. Uses a snapped `setView` at a fixed zoom —
+ * never an animated `panTo` — and throttles updates to avoid frame churn.
+ */
+function WalkFollow({ enabled }: { enabled: boolean }) {
+  const map = useMap();
+  const position = useWalkStore((s) => s.position);
+
+  const savedZoom = useRef<number | null>(null);
+  const lastFrame = useRef(0);
+  const raf = useRef<number | null>(null);
+
+  /* Remember the visitor's zoom, then put it back when the demo hands control back. */
+  useEffect(() => {
+    if (!enabled) {
+      if (savedZoom.current !== null) {
+        map.setZoom(savedZoom.current, { animate: false });
+        savedZoom.current = null;
+      }
+      return;
+    }
+    if (savedZoom.current === null) savedZoom.current = map.getZoom();
+    lastFrame.current = 0;
+  }, [enabled, map]);
+
+  /* Camera follow — coalesced into one rAF, applied at most every 100 ms. */
+  useEffect(() => {
+    if (!enabled || !position) return;
+    if (raf.current !== null) return;
+
+    raf.current = window.requestAnimationFrame(() => {
+      raf.current = null;
+      const now = performance.now();
+      if (now - lastFrame.current < FOLLOW_INTERVAL_MS) return;
+      lastFrame.current = now;
+
+      const size = map.getSize();
+      if (!size.x || !size.y) return;
+
+      // a route fit may still be flying — stop it so the snap wins
+      map.stop();
+
+      // project the walker at the follow zoom, then shift the centre south by
+      // (0.5 - anchor) * height px so the walker lands at anchor * height.
+      const walkerPx = map.project(L.latLng(position.lat, position.lng), FOLLOW_ZOOM);
+      const centrePx = walkerPx.add([0, (0.5 - FOLLOW_ANCHOR_Y) * size.y]);
+      map.setView(map.unproject(centrePx, FOLLOW_ZOOM), FOLLOW_ZOOM, { animate: false });
+    });
+  }, [enabled, position, map]);
+
+  useEffect(
+    () => () => {
+      if (raf.current !== null) window.cancelAnimationFrame(raf.current);
+      raf.current = null;
+    },
+    [],
+  );
+
+  return null;
+}
+
 function RailButton({
   icon: Icon,
   label,
@@ -277,6 +350,8 @@ export default function MapPage() {
   const mapRef = useRef<L.Map | null>(null);
   const bootStarted = useRef(false);
 
+  const cleanMap = useDemoChrome((s) => s.cleanMap);
+
   const [booted, setBooted] = useState(false);
   const [routingOpen, setRoutingOpen] = useState(false);
   const [listOpen, setListOpen] = useState(
@@ -327,6 +402,12 @@ export default function MapPage() {
   }, [trails, profile, selectedTrailId]);
 
   const routeTrail = activeRoute ?? routeResults[0]?.trail ?? null;
+
+  /* Keep Leaflet in sync when the demo removes the page padding (full-bleed). */
+  useEffect(() => {
+    const timer = window.setTimeout(() => mapRef.current?.invalidateSize(), 80);
+    return () => window.clearTimeout(timer);
+  }, [cleanMap]);
 
   /* ---------- interactions ---------- */
   const handleMapClick = useCallback(
@@ -395,7 +476,13 @@ export default function MapPage() {
 
   /* ---------- render ---------- */
   return (
-    <main className="relative h-[calc(100dvh-4rem)] overflow-hidden bg-slate-50 p-3 sm:p-4">
+    <main
+      data-clean-map={cleanMap ? "true" : "false"}
+      className={cn(
+        "relative h-[calc(100dvh-4rem)] overflow-hidden bg-slate-50",
+        !cleanMap && "p-3 sm:p-4",
+      )}
+    >
       <style>{`
         .pathfind-tooltip {
           background: #ffffff !important;
@@ -417,7 +504,12 @@ export default function MapPage() {
         }
       `}</style>
 
-      <div className="relative isolate h-full w-full overflow-hidden rounded-3xl border border-slate-200/80 shadow-xl shadow-slate-200/60">
+      <div
+        className={cn(
+          "relative isolate h-full w-full overflow-hidden",
+          !cleanMap && "rounded-3xl border border-slate-200/80 shadow-xl shadow-slate-200/60",
+        )}
+      >
         <MapContainer
           center={PARK_CENTER}
           zoom={PARK_ZOOM}
@@ -434,6 +526,7 @@ export default function MapPage() {
           style={pinMode === "report" ? { cursor: "crosshair" } : undefined}
         >
           <MapBridge mapRef={mapRef} onClick={handleMapClick} />
+          <WalkFollow enabled={cleanMap} />
 
           <TileLayer
             url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
@@ -651,13 +744,16 @@ export default function MapPage() {
           <LocationMarker />
           <FitRoute trail={routeTrail} />
 
-          <ZoomControl position="bottomright" />
+          {!cleanMap && <ZoomControl position="bottomright" />}
         </MapContainer>
 
         {/* soft inner vignette to seat the map in its frame */}
-        <div className="pointer-events-none absolute inset-0 z-[450] rounded-3xl shadow-[inset_0_0_60px_rgba(15,23,42,0.06)]" />
+        {!cleanMap && (
+          <div className="pointer-events-none absolute inset-0 z-[450] rounded-3xl shadow-[inset_0_0_60px_rgba(15,23,42,0.06)]" />
+        )}
 
         {/* ---------- floating UI ---------- */}
+        {!cleanMap && (
         <div className="pointer-events-none absolute inset-0 z-[650]">
           {/* left rail */}
           <motion.div
@@ -955,10 +1051,13 @@ export default function MapPage() {
             </div>
           )}
         </div>
+        )}
       </div>
 
       {/* ---------- sheets & overlays owned by sibling agents ---------- */}
-      <TrailDetailSheet trailId={selectedTrailId} onClose={() => selectTrail(null)} />
+      {!cleanMap && (
+        <TrailDetailSheet trailId={selectedTrailId} onClose={() => selectTrail(null)} />
+      )}
       <RoutingPanel open={routingOpen} onClose={() => setRoutingOpen(false)} />
       <ReportModal />
       <StartRouteDialog />
